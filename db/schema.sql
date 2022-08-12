@@ -5,13 +5,13 @@ DROP TABLE IF EXISTS departments;
 
 CREATE TABLE departments (
     id INTEGER AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(30) NOT NULL
+    title VARCHAR(30) NOT NULL
 );
 
 CREATE TABLE roles (
     ID INTEGER AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(30) NOT NULL,
-    salary DECIMAL(10,2) NOT NULL,
+    salary DECIMAL(10,0) NOT NULL,
     department_id INTEGER
 );
 
