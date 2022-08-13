@@ -1,8 +1,9 @@
 const inquirer = require('inquirer');
-const { viewDepartments, viewRoles, viewEmployees, addDepartment, addRole, addEmployee } = require('./commands');
+const { viewDepartments, viewRoles, viewEmployees, addDepartment, addRole, addEmployee, updateRole } = require('./commands');
 const Department = require('./lib/Department');
 const Employee = require('./lib/Employee');
 const Role = require('./lib/Role');
+const Update = require('./lib/Update');
 
 const promptUser = () => {
     console.log(`
@@ -37,6 +38,9 @@ const promptUser = () => {
             } else if (choice.menu === 'Add an Employee') {
                 console.log('Add an Employee');
                 promptEmployee();
+            } else if (choice.menu === 'Update an Employee Role') {
+                console.log('Update an Employee Role');
+                promptUpdate();
             }
             })
 }
@@ -178,7 +182,51 @@ const promptEmployee = () => {
                 return console.log("Thank you for using the Employee Tracker 9000");
             }
         });
-} 
+};
+
+const promptUpdate = () => {
+    return inquirer.prompt([
+        {
+            type: 'number',
+            name: 'employeeID',
+            message: "Please enter the Employee ID who's role you'd like to update.(Must be a number)",
+            validate: employeeIDInput => {
+                if (employeeIDInput) {
+                    return true;
+                } else console.log("Please enter the Employee's ID.");
+                return false;
+            }
+        },
+        {
+            type: 'number',
+            name: 'roleID',
+            message: "Please enter the Role ID for the employee's new role.(Must be a number)",
+            validate: roleIDInput => {
+                if (roleIDInput) {
+                    return true;
+                } else console.log("Please enter the Role's ID.");
+                return false;
+            }
+        },
+        {
+            type: 'confirm',
+            name: 'confirmDoMore',
+            message: "Would you like to do anything else?",
+            default: false   
+        }
+    ])
+        .then(updateData => {
+            const update = new Update(updateData.employeeID, updateData.roleID);
+            updateRole(update);
+            console.log("Updated Role");
+            console.log(update);
+            if (updateData.confirmDoMore) {
+                return promptUser();
+            } else {
+                return console.log("Thank you for using the Employee Tracker 9000");
+            }
+        });
+}
 
 promptUser()
 

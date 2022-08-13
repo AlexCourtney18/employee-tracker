@@ -64,6 +64,14 @@ const addEmployee = employee => {
     viewEmployees();
 };
 
+const updateRole = update => {
+    console.log("UPDATE EMPLOYEE");
+    connection.execute(
+        `UPDATE employees SET role_id = "${update.roleID}" WHERE id = "${update.employeeID}";`,
+    );
+    viewEmployees();
+};
+
 
 
 module.exports = {
@@ -72,5 +80,6 @@ module.exports = {
     viewEmployees,
     addDepartment,
     addRole,
-    addEmployee
+    addEmployee,
+    updateRole
 }
