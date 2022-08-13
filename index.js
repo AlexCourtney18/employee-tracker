@@ -1,6 +1,7 @@
 const inquirer = require('inquirer');
-const { viewDepartments, viewRoles, viewEmployees, addDepartment } = require('./commands');
+const { viewDepartments, viewRoles, viewEmployees, addDepartment, addRole } = require('./commands');
 const Department = require('./lib/Department');
+const Role = require('./lib/Role');
 
 const promptUser = () => {
     console.log(`
@@ -29,9 +30,11 @@ const promptUser = () => {
             } else if (choice.menu === 'Add a Department') {
                 console.log('Add a Department');
                 promptDepartment();
+            } else if (choice.menu === 'Add a Role') {
+                console.log('Add a Role');
+                promptRole();
             }
             })
-        //.then(promptUser);
 }
 
 const promptDepartment = () => {
@@ -66,6 +69,56 @@ const promptDepartment = () => {
             }
         });
 };
+
+const promptRole = () => {
+    return inquirer.prompt([
+        {
+            type: 'input',
+            name: 'title',
+            message: "Please enter the Role name. (Required)",
+            validate: roleTitleInput => {
+                if (roleTitleInput) {
+                    return true;
+                } else console.log("Please enter the Role name.");
+                return false;
+            } 
+        },
+        {
+            type: 'number',
+            name: 'salary',
+            message: "Please enter the Role's salary. (Must be a number)",
+            validate: roleSalaryInput => {
+                if (roleSalaryInput) {
+                    return true;
+                } else console.log("Please enter a number for the Salary.");
+                return false;
+            }
+        },
+        {
+            type: 'number',
+            name: 'department_id',
+            message: "Please enter the department ID for this role if known",
+            default: false
+        },
+        {
+            type: 'confirm',
+            name: 'confirmDoMore',
+            message: "Would you like to do anything else?",
+            default: false
+        }
+    ])
+        .then(roleData => {
+            const role = new Role(roleData.title, roleData.salary, roleData.department_id);
+            addRole(role);
+            console.log("Created Role");
+            console.log(role);
+            if (roleData.confirmDoMore) {
+                return promptUser();
+            } else {
+                return console.log("Thank you for using the Employee Tracker 9000");
+            }
+        });
+}
 
 promptUser()
 
