@@ -1,7 +1,7 @@
 const mysql = require('mysql2');
 const cTable = require('console.table');
 const Department = require('./lib/Department');
- // const { promptUser } = require('./index');
+// const { promptUser } = require('./index');
 
 const connection = mysql.createConnection({
     host: 'localhost',
@@ -44,22 +44,24 @@ const addDepartment = department => {
     console.log("ADD DEPARTMENT");
     connection.execute(
         `INSERT INTO departments (title) VALUE ("${department.title}");`,
-        function (err, results) {
-            const table = cTable.getTable(results);
-            console.log(table);
-        }
     );
+    viewDepartments();
 };
 
 const addRole = role => {
     console.log("ADD ROLE");
     connection.execute(
         `INSERT INTO roles (title, salary, department_id) VALUES ("${role.title}", "${role.salary}", "${role.departmentID}");`,
-        function (err, results) {
-            const table = cTable.getTable(results);
-            console.log(table);
-        }
-    );
+        );
+    viewRoles();
+};
+
+const addEmployee = employee => {
+    console.log("ADD Employee");
+    connection.execute(
+        `INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES ("${employee.firstName}", "${employee.lastName}", "${employee.roleID}", "${employee.managerID}");`,
+        );
+    viewEmployees();
 };
 
 
@@ -69,5 +71,6 @@ module.exports = {
     viewRoles,
     viewEmployees,
     addDepartment,
-    addRole
+    addRole,
+    addEmployee
 }

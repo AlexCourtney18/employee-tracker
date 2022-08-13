@@ -1,6 +1,7 @@
 const inquirer = require('inquirer');
-const { viewDepartments, viewRoles, viewEmployees, addDepartment, addRole } = require('./commands');
+const { viewDepartments, viewRoles, viewEmployees, addDepartment, addRole, addEmployee } = require('./commands');
 const Department = require('./lib/Department');
+const Employee = require('./lib/Employee');
 const Role = require('./lib/Role');
 
 const promptUser = () => {
@@ -33,6 +34,9 @@ const promptUser = () => {
             } else if (choice.menu === 'Add a Role') {
                 console.log('Add a Role');
                 promptRole();
+            } else if (choice.menu === 'Add an Employee') {
+                console.log('Add an Employee');
+                promptEmployee();
             }
             })
 }
@@ -118,7 +122,63 @@ const promptRole = () => {
                 return console.log("Thank you for using the Employee Tracker 9000");
             }
         });
-}
+};
+
+const promptEmployee = () => {
+    return inquirer.prompt([
+        {
+            type: 'input',
+            name: 'first_name',
+            message: "Please enter the Employee's first name. (Required)",
+            validate: firstNameInput => {
+                if (firstNameInput) {
+                    return true;
+                } else console.log("Please enter the first name.");
+                return false;
+            } 
+        },
+        {
+            type: 'input',
+            name: 'last_name',
+            message: "Please enter the Employee's last name. (Required)",
+            validate: lastNameInput => {
+                if (lastNameInput) {
+                    return true;
+                } else console.log("Please enter the last name.");
+                return false;
+            }
+        },
+        {
+            type: 'number',
+            name: 'role_id',
+            message: "Please enter the role ID if known",
+            default: false
+        },
+        {
+            type: 'number',
+            name: 'manager_id',
+            message: "Please enter the manager ID if known",
+            default: false
+        },
+        {
+            type: 'confirm',
+            name: 'confirmDoMore',
+            message: "Would you like to do anything else?",
+            default: false
+        }
+    ])
+        .then(employeeData => {
+            const employee = new Employee( employeeData.first_name, employeeData.last_name, employeeData.role_id, employeeData.manager_id );
+            addEmployee(employee);
+            console.log("Created Employee");
+            console.log(employee);
+            if (employeeData.confirmDoMore) {
+                return promptUser();
+            } else {
+                return console.log("Thank you for using the Employee Tracker 9000");
+            }
+        });
+} 
 
 promptUser()
 
