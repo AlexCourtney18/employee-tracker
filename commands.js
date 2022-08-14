@@ -37,7 +37,10 @@ const viewRoles = () => {
 
 const viewEmployees = () => {
     connection.execute(
-        `SELECT * FROM employees;`,
+        `SELECT employees.*, roles.title AS job_title, roles.salary AS salary, departments.title AS department_name, CONCAT(employees.first_name, ' ', employees.last_name) AS manager_name
+        FROM employees
+        LEFT JOIN roles ON employees.role_id = roles.id AND employees.role_id = roles.id
+        LEFT JOIN departments ON roles.department_id = departments.id;`,
         function (err, results) {
             const table = cTable.getTable(results);
             console.log(table);
