@@ -230,4 +230,4 @@ const promptUpdate = () => {
 
 promptUser()
 
-// module.exports = { promptUser };
+ module.exports.promptUser = promptUser;

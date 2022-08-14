@@ -1,7 +1,7 @@
 const mysql = require('mysql2');
 const cTable = require('console.table');
 const Department = require('./lib/Department');
-// const { promptUser } = require('./index');
+const index = require('./index');
 
 const connection = mysql.createConnection({
     host: 'localhost',
@@ -16,18 +16,23 @@ const viewDepartments = () => {
         function (err, results) {
             const table = cTable.getTable(results);
             console.log(table);
+            index.promptUser();
         }
     );
 };
 
 const viewRoles = () => {
     connection.execute(
-        `SELECT * FROM roles;`,
+        `SELECT roles.*, departments.title AS department_name
+        FROM roles
+        LEFT JOIN departments ON roles.department_id = departments.id
+        ORDER BY department_id ASC;`,
         function (err, results) {
             const table = cTable.getTable(results);
             console.log(table);
+            index.promptUser();
         }
-    )
+    );
 };
 
 const viewEmployees = () => {
@@ -36,6 +41,7 @@ const viewEmployees = () => {
         function (err, results) {
             const table = cTable.getTable(results);
             console.log(table);
+            index.promptUser();
         }
     );
 };
