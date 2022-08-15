@@ -113,7 +113,7 @@ const promptRole = () => {
     ])
         .then(roleData => {
 
-            const sql = `Select departments.id AS department_id, departments.title as name FROM departments`;
+            const sql = `Select departments.id AS value, departments.title as name FROM departments`;
             connection.query(sql, (err, result) => {
                 if (err) throw err;
                 const departmentArray = result;
