@@ -1,4 +1,5 @@
 const inquirer = require('inquirer');
+const connection = require('mysql2/typings/mysql/lib/Connection');
 const { viewDepartments, viewRoles, viewEmployees, addDepartment, addRole, addEmployee, updateRole } = require('./commands');
 const Department = require('./lib/Department');
 const Employee = require('./lib/Employee');
@@ -42,7 +43,7 @@ const promptUser = () => {
                 console.log('Update an Employee Role');
                 promptUpdate();
             }
-            })
+        })
 }
 
 const promptDepartment = () => {
@@ -89,7 +90,7 @@ const promptRole = () => {
                     return true;
                 } else console.log("Please enter the Role name.");
                 return false;
-            } 
+            }
         },
         {
             type: 'number',
@@ -101,30 +102,42 @@ const promptRole = () => {
                 } else console.log("Please enter a number for the Salary.");
                 return false;
             }
-        },
-        {
-            type: 'number',
-            name: 'department_id',
-            message: "Please enter the department ID for this role if known",
-            default: false
-        },
-        {
-            type: 'confirm',
-            name: 'confirmDoMore',
-            message: "Would you like to do anything else?",
-            default: false
         }
     ])
         .then(roleData => {
-            const role = new Role(roleData.title, roleData.salary, roleData.department_id);
-            addRole(role);
-            console.log("Created Role");
-            console.log(role);
-            if (roleData.confirmDoMore) {
-                return promptUser();
-            } else {
-                return console.log("Thank you for using the Employee Tracker 9000");
-            }
+
+            const sql = `Select departments.id AS value, departments.title as name FROM departments`;
+            connection.query(sql, (err, result) => {
+                if (err) throw err;
+                const departmentArray = result;
+                console.log(departmentArray);
+
+                inquirer.prompt([
+                    {
+                        type: 'list',
+                        name: 'department',
+                        message: 'Which department does this role belong to?',
+                        choices: departmentArray
+                    },
+                    {
+                        type: 'confirm',
+                        name: 'confirmDoMore',
+                        message: "Would you like to do anything else?",
+                        default: false
+                    }
+                ])
+                    .then(results => {
+                        const role = new Role(roleData.title, roleData.salary, roleData.department_id);
+                        addRole(role);
+                        console.log("Created Role");
+                        console.log(role);
+                        if (results.confirmDoMore) {
+                            return promptUser();
+                        } else {
+                            return console.log("Thank you for using the Employee Tracker 9000");
+                        }
+                    });
+            });
         });
 };
 
@@ -139,7 +152,7 @@ const promptEmployee = () => {
                     return true;
                 } else console.log("Please enter the first name.");
                 return false;
-            } 
+            }
         },
         {
             type: 'input',
@@ -172,7 +185,7 @@ const promptEmployee = () => {
         }
     ])
         .then(employeeData => {
-            const employee = new Employee( employeeData.first_name, employeeData.last_name, employeeData.role_id, employeeData.manager_id );
+            const employee = new Employee(employeeData.first_name, employeeData.last_name, employeeData.role_id, employeeData.manager_id);
             addEmployee(employee);
             console.log("Created Employee");
             console.log(employee);
@@ -212,7 +225,7 @@ const promptUpdate = () => {
             type: 'confirm',
             name: 'confirmDoMore',
             message: "Would you like to do anything else?",
-            default: false   
+            default: false
         }
     ])
         .then(updateData => {
@@ -230,4 +243,4 @@ const promptUpdate = () => {
 
 promptUser()
 
- module.exports.promptUser = promptUser;
+module.exports.promptUser = promptUser;
