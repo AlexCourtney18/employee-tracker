@@ -1,10 +1,17 @@
+const mysql = require('mysql2');
 const inquirer = require('inquirer');
-const connection = require('mysql2/typings/mysql/lib/Connection');
 const { viewDepartments, viewRoles, viewEmployees, addDepartment, addRole, addEmployee, updateRole } = require('./commands');
 const Department = require('./lib/Department');
 const Employee = require('./lib/Employee');
 const Role = require('./lib/Role');
 const Update = require('./lib/Update');
+
+const connection = mysql.createConnection({
+    host: 'localhost',
+    user: 'root',
+    password: 'Password',
+    database: 'company'
+});
 
 const promptUser = () => {
     console.log(`
@@ -106,7 +113,7 @@ const promptRole = () => {
     ])
         .then(roleData => {
 
-            const sql = `Select departments.id AS value, departments.title as name FROM departments`;
+            const sql = `Select departments.id AS department_id, departments.title as name FROM departments`;
             connection.query(sql, (err, result) => {
                 if (err) throw err;
                 const departmentArray = result;
@@ -127,7 +134,8 @@ const promptRole = () => {
                     }
                 ])
                     .then(results => {
-                        const role = new Role(roleData.title, roleData.salary, roleData.department_id);
+                        console.log(results);
+                        const role = new Role(roleData.title, roleData.salary, results.department);
                         addRole(role);
                         console.log("Created Role");
                         console.log(role);
