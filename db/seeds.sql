@@ -1,7 +1,7 @@
 INSERT INTO departments (title)
 VALUES
 ('Accounting'),
-('HR'),
+('Human Resources'),
 ('Marketing'),
 ('Sales');
 

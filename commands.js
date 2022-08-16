@@ -16,7 +16,7 @@ const viewDepartments = () => {
         function (err, results) {
             const table = cTable.getTable(results);
             console.log(table);
-            index.promptUser();
+            index.promptConfirm();
         }
     );
 };
@@ -30,14 +30,14 @@ const viewRoles = () => {
         function (err, results) {
             const table = cTable.getTable(results);
             console.log(table);
-            index.promptUser();
+            index.promptConfirm();
         }
     );
 };
 
 const viewEmployees = () => {
     connection.execute(
-        `SELECT employees.*, roles.title AS job_title, roles.salary AS salary, departments.title AS department_name, CONCAT(manager.first_name, ' ', manager.last_name) AS manager_name
+        `SELECT employees.id AS id, employees.first_name AS first_name, employees.last_name AS last_name, roles.title AS job_title, roles.salary AS salary, departments.title AS department_name, CONCAT(manager.first_name, ' ', manager.last_name) AS manager_name
         FROM employees
         LEFT JOIN roles ON employees.role_id = roles.id AND employees.role_id = roles.id
         LEFT JOIN departments ON roles.department_id = departments.id
@@ -45,13 +45,12 @@ const viewEmployees = () => {
         function (err, results) {
             const table = cTable.getTable(results);
             console.log(table);
-            index.promptUser();
+            index.promptConfirm();
         }
     );
 };
 
 const addDepartment = department => {
-    console.log("ADD DEPARTMENT");
     connection.execute(
         `INSERT INTO departments (title) VALUE ("${department.title}");`,
     );
@@ -59,7 +58,6 @@ const addDepartment = department => {
 };
 
 const addRole = role => {
-    console.log("ADD ROLE");
     connection.execute(
         `INSERT INTO roles (title, salary, department_id) VALUES ("${role.title}", "${role.salary}", "${role.departmentID}");`,
         );
@@ -67,7 +65,6 @@ const addRole = role => {
 };
 
 const addEmployee = employee => {
-    console.log("ADD Employee");
     connection.execute(
         `INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES ("${employee.firstName}", "${employee.lastName}", "${employee.roleID}", "${employee.managerID}");`,
         );
@@ -75,7 +72,6 @@ const addEmployee = employee => {
 };
 
 const updateRole = update => {
-    console.log("UPDATE EMPLOYEE");
     connection.execute(
         `UPDATE employees SET role_id = "${update.roleID}" WHERE id = "${update.employeeID}";`,
     );
