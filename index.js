@@ -113,11 +113,10 @@ const promptRole = () => {
     ])
         .then(roleData => {
 
-            const sql = `Select departments.id AS value, departments.title as name FROM departments`;
+            const sql = `Select departments.id AS value, departments.title AS name FROM departments`;
             connection.query(sql, (err, result) => {
                 if (err) throw err;
                 const departmentArray = result;
-                console.log(departmentArray);
 
                 inquirer.prompt([
                     {
@@ -134,11 +133,9 @@ const promptRole = () => {
                     }
                 ])
                     .then(results => {
-                        console.log(results);
                         const role = new Role(roleData.title, roleData.salary, results.department);
                         addRole(role);
                         console.log("Created Role");
-                        console.log(role);
                         if (results.confirmDoMore) {
                             return promptUser();
                         } else {
@@ -172,36 +169,55 @@ const promptEmployee = () => {
                 } else console.log("Please enter the last name.");
                 return false;
             }
-        },
-        {
-            type: 'number',
-            name: 'role_id',
-            message: "Please enter the role ID if known",
-            default: false
-        },
-        {
-            type: 'number',
-            name: 'manager_id',
-            message: "Please enter the manager ID if known",
-            default: false
-        },
-        {
-            type: 'confirm',
-            name: 'confirmDoMore',
-            message: "Would you like to do anything else?",
-            default: false
         }
     ])
-        .then(employeeData => {
-            const employee = new Employee(employeeData.first_name, employeeData.last_name, employeeData.role_id, employeeData.manager_id);
-            addEmployee(employee);
-            console.log("Created Employee");
-            console.log(employee);
-            if (employeeData.confirmDoMore) {
-                return promptUser();
-            } else {
-                return console.log("Thank you for using the Employee Tracker 9000");
-            }
+        .then(nameData => {
+            const sql = `Select roles.id AS value, roles.title AS name FROM roles`;
+            connection.query(sql, (err, result) => {
+                if (err) throw err;
+                const roleArray = result;
+
+                inquirer.prompt([
+                    {
+                        type: 'list',
+                        name: 'role_id',
+                        message: "Please select the role for the new employee.",
+                        choices: roleArray
+                    }
+                ])
+                    .then(roleData => {
+                        const sql = `Select employees.id AS value, CONCAT(employees.first_name, ' ', employees.last_name) AS name FROM employees`;
+                        connection.query(sql, (err, result) => {
+                            if (err) throw err;
+                            const empArray = result;
+
+                            inquirer.prompt([
+                                {
+                                    type: 'list',
+                                    name: 'emp_id',
+                                    message: "Please select the manager for the new employee.",
+                                    choices: empArray
+                                },
+                                {
+                                    type: 'confirm',
+                                    name: 'confirmDoMore',
+                                    message: "Would you like to do anything else?",
+                                    default: false
+                                }
+                            ])
+                                .then(results => {
+                                    const employee = new Employee(nameData.first_name, nameData.last_name, roleData.role_id, results.emp_id);
+                                    addEmployee(employee);
+                                    console.log("Created Employee");
+                                    if (results.confirmDoMore) {
+                                        return promptUser();
+                                    } else {
+                                        return console.log("Thank you for using the Employee Tracker 9000");
+                                    }
+                                });
+                        });
+                    });
+            });
         });
 };
 
